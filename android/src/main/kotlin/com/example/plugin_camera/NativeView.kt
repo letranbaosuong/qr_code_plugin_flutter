@@ -109,8 +109,15 @@ internal class NativeView(context: Context, messenger: BinaryMessenger, /*privat
         when(call.method) {
             "getPlatformVersion" -> result.success("Android ${Build.VERSION.RELEASE}")
             "startScan" -> startScan(call.arguments as? List<Int>, result)
-            "getResultBarcode" -> {
-                /*IntentIntegrator(Shared.activity).apply {
+            "pauseCamera" -> pauseCamera(result)
+            "resumeCamera" -> resumeCamera(result)
+            "getResultBarcode" -> getResultBarcode(result)
+            else -> result.notImplemented()
+        }
+    }
+
+    private fun getResultBarcode(result: MethodChannel.Result) {
+        /*IntentIntegrator(Shared.activity).apply {
                     setDesiredBarcodeFormats(IntentIntegrator.QR_CODE) //Chọn type của BarCode
                     setPrompt("Đây là message thông báo hiển thị trên màn hình capture")
                     setCameraId(0) //Id của camera sử dụng để thực hiện scan
@@ -119,21 +126,31 @@ internal class NativeView(context: Context, messenger: BinaryMessenger, /*privat
                     //vân vân và mây mây
                     initiateScan() //bắt đầu scan
                 }*/
-                //IntentIntegrator(Shared.activity).initiateScan() // `this` is the current Activity
-                barcodeView?.decodeSingle (object: BarcodeCallback {
-                    override fun barcodeResult(resultBarcode: BarcodeResult?) {
-                        resultBarcode?.let {
-                            Log.d("NativeView", "barcodeResult: ${it.text}")
-                            result.success(it.text)
-                        }
-                    }
-
-                    override fun possibleResultPoints(resultPoints: MutableList<ResultPoint>?) {
-                    }
-                })
+        //IntentIntegrator(Shared.activity).initiateScan() // `this` is the current Activity
+        barcodeView?.decodeSingle (object: BarcodeCallback {
+            override fun barcodeResult(resultBarcode: BarcodeResult?) {
+                resultBarcode?.let {
+                    Log.d("NativeView", "barcodeResult: ${it.text}")
+                    result.success(it.text)
+                }
             }
-            else -> result.notImplemented()
-        }
+
+            override fun possibleResultPoints(resultPoints: MutableList<ResultPoint>?) {
+            }
+        })
+    }
+
+    private fun resumeCamera(result: MethodChannel.Result) {
+        barcodeView?.pause()
+        barcodeView?.resume()
+        Log.d("NativeView", "resumeCamera")
+        result.success("resume")
+    }
+
+    private fun pauseCamera(result: MethodChannel.Result) {
+        barcodeView?.pause()
+        Log.d("NativeView", "pauseCamera")
+        result.success("pause")
     }
 
     private fun startScan(arguments: List<Int>?, result: MethodChannel.Result) {

@@ -16,4 +16,12 @@ class PluginCamera {
     final String? stringBarcode = await _channel.invokeMethod('getResultBarcode');
     return stringBarcode;
   }
+
+  static Future<String?> get pauseCamera async {
+    return await _channel.invokeMethod('pauseCamera');
+  }
+
+  static Future<String?> get resumeCamera async {
+    return await _channel.invokeMethod('resumeCamera');
+  }
 }

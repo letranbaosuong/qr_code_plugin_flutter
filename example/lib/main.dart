@@ -43,18 +43,48 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Column(
           children: [
-            Text('Result: $_getStringBarcode\n'),
-            ElevatedButton(
-              onPressed: () async {
-                PluginCamera.platformVersion.then((value) => print(value));
-                await _getResultBarcode();
-              },
-              child: Text('Start Scan'),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SingleChildScrollView(
+                  child: Text(
+                    'Result: $_getStringBarcode',
+                  ),
+                ),
+              ),
             ),
             Expanded(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    onPressed: () =>
+                        PluginCamera.pauseCamera.then((value) => print(value)),
+                    icon: const Icon(Icons.pause),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      PluginCamera.platformVersion
+                          .then((value) => print(value));
+                      await _getResultBarcode();
+                    },
+                    child: const Text('Start Scan'),
+                  ),
+                  IconButton(
+                    onPressed: () =>
+                        PluginCamera.resumeCamera.then((value) => print(value)),
+                    icon: const Icon(Icons.play_arrow),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 7,
               child: AndroidView(
                 viewType: viewType,
-                layoutDirection: TextDirection.ltr,
+                // layoutDirection: TextDirection.ltr,
                 creationParams: creationParams,
                 creationParamsCodec: const StandardMessageCodec(),
               ),
